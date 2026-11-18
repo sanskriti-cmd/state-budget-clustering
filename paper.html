@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clustering Indian States by Budget Priorities</title>
+<style>
+  :root { --navy:#1f3864; --blue:#2f5597; --grey:#595959; --tint:#f1f5fb; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Carlito, Calibri, sans-serif; font-size: 9.7pt; line-height: 1.3; color:#111; margin:0; }
+  h1 { font-size: 17.5pt; line-height: 1.2; color: var(--navy); text-align:center; margin: 4px 0 10px; font-weight:700; }
+  .author { text-align:center; font-size: 11pt; margin-bottom: 4px; }
+  .aff { text-align:center; font-style: italic; color: var(--grey); font-size: 8.6pt; line-height:1.35; margin-bottom: 3px; }
+  .abs { border-top: 1.6px solid var(--navy); border-bottom: 1.6px solid var(--navy); background: var(--tint);
+         padding: 7px 12px 6px; margin: 10px 0 12px; text-align: justify; font-size: 9.3pt; line-height:1.3; }
+  .abs .kw { margin-top: 5px; }
+  .cols { column-count: 2; column-gap: 8mm; text-align: justify; hyphens: auto; }
+  h2 { font-size: 11.8pt; color: var(--navy); margin: 10px 0 3px; break-after: avoid; font-weight:700; }
+  h2 span { display:inline-block; width: 1.5em; }
+  h3 { font-size: 9.7pt; font-style: italic; font-weight: 700; margin: 6px 0 2px; break-after: avoid; color:#222; }
+  p { margin: 0 0 4.5px; orphans: 2; widows: 2; }
+  p.ind { text-indent: 1.1em; }
+  .eq { display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; margin: 2px 0 4px; break-inside: avoid; }
+  .eq .m { font-style: italic; text-align:center; font-size: 10pt; }
+  .eq .n { text-align:right; }
+  .fig, .tbl { break-inside: avoid; margin: 6px 0 7px; }
+  .fig { text-align:center; }
+  .fig img { max-width: 100%; }
+  .cap { font-size: 8pt; line-height: 1.25; text-align: left; margin-top: 3px; color:#222; }
+  .tcap { text-align:center; margin: 0 0 3px; }
+  .wide { column-span: all; margin: 8px 0 8px; }
+  .wide img { width: 78%; }
+  table.t { width:100%; border-collapse: collapse; font-size: 7.9pt; line-height:1.2; }
+  table.t th { border-top: 1.5px solid var(--navy); border-bottom: .8px solid var(--navy); padding: 2px 4px; text-align:left; font-weight:700; }
+  table.t td { padding: 1.6px 4px; vertical-align: top; text-align: left; hyphens: manual; }
+  table.t td:last-child:not(.n) { white-space: normal; }
+  table.t.src td:last-child { white-space: nowrap; }
+  table.t tbody tr:last-child td { border-bottom: 1.5px solid var(--navy); }
+  table.t td.n, table.t th.n { text-align:right; }
+  table.t td.n { text-align: right; }
+  .ref { font-size: 8.2pt; line-height:1.25; padding-left: 1.9em; text-indent: -1.9em; margin-bottom: 3px; text-align:left; hyphens: manual; word-break: break-word; }
+  .note { font-style: italic; }
+  code, pre { font-family: "DejaVu Sans Mono", monospace; font-size: 7.4pt; }
+  pre { background: var(--tint); border: .6px solid #c9d3e3; padding: 4px 6px; margin: 3px 0 6px; white-space: pre-wrap; text-align:left; break-inside: avoid; }
+  .code pre.code { font-size: 6.3pt; line-height: 1.17; break-inside: auto; white-space: pre-wrap; word-break: break-all; }
+  .code { margin-top: 10px; }
+  .small { font-size: 8.4pt; }
+  sub, sup { line-height: 0; }
+</style>
+</head>
+<body>
+
+<h1>Clustering Indian States by Budget Priorities (Health, Education and Capital Expenditure) Using K-means, Hierarchical Clustering and PCA on RBI State Finance Data</h1>
+<div class="author">[Student Name]</div>
+<div class="aff">Department of Computer Science, [College Name], University of Delhi, New Delhi, India &nbsp;|&nbsp; Roll No.: [xxxx] &nbsp;|&nbsp; E-mail: [name@college.du.ac.in]<br>
+Course: Machine Learning (B.Sc. (H) Computer Science, Semester VI) &nbsp;|&nbsp; Supervisor: [Name] &nbsp;|&nbsp; SDG 16 and SDG 17 &nbsp;|&nbsp; Article type: Data Article / Data-in-Brief (coursework prototype)</div>
+
+<div class="abs">
+<b>Abstract.</b> State budgets reveal policy priorities, but states differ so much in size and fiscal capacity that absolute spending is a poor basis for comparison. This study asks whether unsupervised learning from an undergraduate syllabus can group Indian states and Union Territories by their budget priorities. We use a 31-unit cross-section (28 states and three Union Territories with legislatures) of 2025-26 Budget Estimates from the Reserve Bank of India’s <i>State Finances: A Study of Budgets</i>, described by five indicators: education and health as shares of aggregate expenditure, and development expenditure, social-sector expenditure and capital outlay as percentages of GSDP. After z-score scaling, K-means for k = 2–6 was compared by silhouette score, with Ward hierarchical clustering and PCA as companions. The highest silhouette (0.329) occurred at k = 5, but two of the five clusters are single units (NCT Delhi and Arunachal Pradesh), so the structure is better read as three broad groups plus two outliers. The first two principal components explained 86.8% of the variance. The three GSDP-scaled indicators are strongly correlated, so much of the clustering reflects the size of a state’s budget relative to its economy rather than the mix of spending. The data are a one-year budget snapshot and no link to development outcomes is claimed. A multi-year panel schema and reproducible code are provided.
+<div class="kw"><b>Keywords:</b> state budgets; fiscal priorities; RBI; K-means; hierarchical clustering; PCA; silhouette score; compositional data; SDG 16; SDG 17</div>
+</div>
+
+<main class="cols">
+
+<h2><span>1</span>Introduction</h2>
+<p>State governments deliver most public education, health and local-infrastructure services in India, so their budgets are a direct record of policy priorities. Comparing those priorities is difficult because states differ greatly in population, income and revenue capacity; absolute rupee figures mostly reflect size. Shares and ratios are more comparable, provided the numerator and denominator are stated explicitly [1], [2].</p>
+<p class="ind">Clustering fits this problem naturally because there is no label to predict: we want to discover which states resemble each other. This assignment applies the unsupervised methods of an undergraduate machine-learning syllabus – K-means, hierarchical clustering and principal component analysis (PCA) – to a cross-section of Indian state budgets. We ask: (RQ1) which fiscal profiles emerge from education, health and capital-related indicators; (RQ2) how many groups the data support; (RQ3) what drives the separation, as revealed by PCA and the correlation structure; and (RQ4) how the groups could be related to development outcomes without circular reasoning.</p>
+<p class="ind">Our contributions are: (i) a documented feature table with an explicit denominator for every indicator; (ii) a leakage-free design in which development outcomes are kept out of the clustering and used only afterwards; (iii) one script that compares K-means solutions with three internal metrics and fits Ward clustering and PCA; (iv) a candid reading of the results, including outliers and redundant indicators; and (v) a multi-year panel schema for extending the work. The study supports SDG 16 (Peace, Justice and Strong Institutions) by making public spending patterns easier to scrutinise, and SDG 17 (Partnerships for the Goals) by building on official open data and releasing reusable code.</p>
+<p class="ind">Section 2 gives the background, Section 3 the data, Sections 4–5 the methods and set-up, Section 6 the results and Section 7 the discussion, followed by conclusions.</p>
+
+<h2><span>2</span>Related Work and Background</h2>
+<p>The Reserve Bank of India’s annual <i>State Finances</i> report [1] draws on the budget documents of 31 state governments and Union Territories with legislatures, supplemented by CAG Finance Accounts where required, and publishes statements on deficits, expenditure composition and liabilities [2]. Statements 26 and 27 give education and health expenditure as shares of aggregate expenditure [3], [4]; Statement 35 gives select development-expenditure indicators [5]; and Appendix IV reports capital expenditure by state [6]. The report presents these as tables and narrative comparisons; this assignment adds a reproducible clustering workflow on top of them.</p>
+<p class="ind">K-means [8] partitions observations into k groups by minimising the within-cluster sum of squared distances; it is fast but sensitive to scaling, outliers and initialisation. Ward’s method [9] builds a nested hierarchy by merging the pair of groups that least increases within-group variance. PCA [11] rotates correlated variables into orthogonal components ordered by explained variance; here it is used to visualise the clusters. The silhouette coefficient [10] compares cohesion with separation, and the Calinski–Harabasz [12] and Davies–Bouldin [13] indices are secondary internal measures. Fiscal shares can be compositional data [14] – non-negative parts of one whole – for which log-ratio transforms are appropriate; Section 3.3 explains why this does not hold for our five indicators. All models use scikit-learn [15]; general background is in [16].</p>
+
+<h2><span>3</span>Dataset and Preprocessing</h2>
+<h3>3.1&nbsp; Source and description</h3>
+<p>The data come from the RBI publication <i>State Finances: A Study of Budgets 2025-26</i>, released on 23 January 2026 [1]. The analysis file has 31 observations: 28 states and three Union Territories with legislatures (NCT Delhi, Jammu and Kashmir, Puducherry), compiled from Statements 26, 27 and 35 [3]–[5]. All values are 2025-26 <i>Budget Estimates</i> (BE), i.e. planned, not audited, spending. Table 1 lists the five indicators.</p>
+
+<div class="tbl">
+<div class="cap tcap"><b>Table 1.</b> Indicators used in the clustering (per cent; 2025-26 BE; 31 units).</div>
+<table class="t src">
+<thead><tr><th>Indicator</th><th>Definition</th><th>Denominator</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>Education</td><td>Education expenditure</td><td>Aggregate expenditure</td><td>Stmt 26</td></tr>
+<tr><td>Health</td><td>Medical, public health and family welfare</td><td>Aggregate expenditure</td><td>Stmt 27</td></tr>
+<tr><td>Dev/GSDP</td><td>Development expenditure</td><td>GSDP</td><td>Stmt 35</td></tr>
+<tr><td>Social/GSDP</td><td>Social-sector expenditure</td><td>GSDP</td><td>Stmt 35</td></tr>
+<tr><td>Capex/GSDP</td><td>Capital outlay</td><td>GSDP</td><td>Stmt 35</td></tr>
+</tbody></table>
+</div>
+
+<p>Two points of vocabulary matter. Development expenditure and capital outlay are not the same as capital expenditure, and total capital disbursements can include debt repayment and other capital-account transactions. We therefore say <i>capital outlay</i>, and keep the distinction in the extended schema (Table 2). The “capital expenditure” priority of the problem statement is represented here by capital outlay relative to GSDP, not as a share of aggregate expenditure.</p>
+
+<h3>3.2&nbsp; Cleaning and verification status</h3>
+<p>State names were harmonised across statements and the all-states aggregate row was removed. All 31 units have complete values for the five indicators, so no imputation was needed; the code drops, rather than imputes, any unit with a missing indicator. If a monetary field is ever used, RBI tables may report ₹ crore or ₹ lakh and must be converted to one unit first; this is not needed for the percentages used here. <b>Verification status:</b> the 31-unit table was compiled for the original analysis and has not yet been re-checked cell by cell against the RBI Excel files; this is a required step before submission (Section 7).</p>
+
+<h3>3.3&nbsp; Scaling and the compositional-data issue</h3>
+<p>Each indicator is standardised using means and standard deviations over the 31 units, because the indicators have different ranges:</p>
+<div class="eq"><span></span><span class="m">z<sub>ij</sub> = (x<sub>ij</sub> − μ<sub>j</sub>) / σ<sub>j</sub></span><span class="n">(1)</span></div>
+<p>Education and health are shares of aggregate expenditure, whereas the other three are percentages of GSDP. The five variables therefore share no common total and do not form a closed composition. The centred log-ratio (CLR) transform [14],</p>
+<div class="eq"><span></span><span class="m">clr(x)<sub>j</sub> = ln x<sub>j</sub> − (1/D) Σ<sub>l=1..D</sub> ln x<sub>l</sub></span><span class="n">(2)</span></div>
+<p>is valid only for strictly positive parts of a single whole, so applying it here would be inappropriate and we use z-scores. A proper CLR analysis needs mutually exclusive categories under one denominator (for example capital outlay, social services, economic services, interest payments and administration as shares of aggregate expenditure); the code and Table 2 prepare for this.</p>
+
+<h3>3.4&nbsp; Relationships between the indicators</h3>
+<p>Fig. 1 shows the Pearson correlations. Education and health shares are moderately and positively correlated (about 0.6, read from the figure). The three GSDP-scaled indicators are very strongly correlated with one another (roughly 0.85–0.95), whereas education and health are only weakly related to them. In effect the five variables carry two main dimensions – the size of the budget relative to GSDP, and the weight of education and health – which anticipates the PCA result in Section 6.2.</p>
+<div class="fig">
+<img src="../results_original_run/figures/fig_correlation_matrix.png" style="width:86%" alt="Correlation matrix">
+<div class="cap"><b>Fig. 1.</b> Pearson correlation matrix of the five fiscal indicators (31 units).</div>
+</div>
+
+<h3>3.5&nbsp; Extended panel schema</h3>
+<p>The natural extension is a panel whose unit is <i>state × financial year × estimate type</i> (Accounts, Revised Estimates or Budget Estimates). Accounts are preferred; stages must not be mixed within one observation, and BE/RE can serve as sensitivity checks. RBI data include Union Territories with legislatures from 2017-18 onwards [2], which is a natural start for a consistent panel, and the e-STATES workbook [7] is a possible source. Table 2 documents the indicators the code and data notes are designed for; they were not used in the reported run.</p>
+<div class="tbl">
+<div class="cap tcap"><b>Table 2.</b> Extended feature schema for a multi-year panel (not used in the reported run).</div>
+<table class="t">
+<thead><tr><th>Feature</th><th>Operational definition</th><th>Reading</th></tr></thead>
+<tbody>
+<tr><td>Education share</td><td>Education ÷ aggregate exp. × 100</td><td>Social-sector priority</td></tr>
+<tr><td>Health share</td><td>Medical/health/family welfare ÷ aggregate exp. × 100</td><td>Health priority</td></tr>
+<tr><td>Capex share</td><td>Capital expenditure ÷ aggregate exp. × 100</td><td>Asset-creation emphasis</td></tr>
+<tr><td>Capital outlay share</td><td>Capital outlay ÷ aggregate exp. × 100</td><td>Direct asset creation</td></tr>
+<tr><td>Interest burden</td><td>Interest payments ÷ revenue exp. × 100</td><td>Debt-servicing pressure</td></tr>
+<tr><td>Committed burden</td><td>Committed exp. ÷ revenue exp. × 100</td><td>Budget rigidity</td></tr>
+<tr><td>Capital intensity</td><td>Capital expenditure ÷ GSDP × 100</td><td>Capital spend vs economy</td></tr>
+</tbody></table>
+</div>
+
+<h2><span>4</span>Methodology</h2>
+<p>Fig. 2 summarises the workflow. All steps after cleaning operate on the standardised matrix <b>X</b> with n = 31 rows and p = 5 columns.</p>
+<div class="fig">
+<img src="../figures/fig_workflow.png" style="width:100%" alt="Pipeline">
+<div class="cap"><b>Fig. 2.</b> Methodology pipeline. Step 7 (dashed) needs external outcome data and is not part of the reported run.</div>
+</div>
+
+<h3>4.1&nbsp; K-means</h3>
+<p>K-means minimises the within-cluster sum of squares</p>
+<div class="eq"><span></span><span class="m">J = Σ<sub>i=1..n</sub> ‖x<sub>i</sub> − μ<sub>c(i)</sub>‖²</span><span class="n">(3)</span></div>
+<p>where c(i) is the cluster of unit i and μ<sub>c</sub> the centroid of cluster c. We fit k = 2,…,6 with random_state = 42 and n_init = 50 restarts and keep the k with the highest mean silhouette.</p>
+
+<h3>4.2&nbsp; Ward hierarchical clustering</h3>
+<p>Starting from single units, Ward linkage repeatedly merges the pair of clusters A and B that least increases the within-cluster variance,</p>
+<div class="eq"><span></span><span class="m">Δ(A, B) = [ |A||B| / (|A| + |B|) ] ‖μ<sub>A</sub> − μ<sub>B</sub>‖²</span><span class="n">(4)</span></div>
+<p>The tree is cut at the same k as K-means so the two partitions can be compared with the adjusted Rand index (ARI).</p>
+
+<h3>4.3&nbsp; PCA</h3>
+<p>PCA is fitted to <b>X</b> and the first two components are used only to visualise the clusters; clustering itself is done in the original standardised five-dimensional space.</p>
+
+<h3>4.4&nbsp; Evaluation</h3>
+<p>For unit i the silhouette is</p>
+<div class="eq"><span></span><span class="m">s(i) = [ b(i) − a(i) ] / max{ a(i), b(i) }</span><span class="n">(5)</span></div>
+<p>where a(i) is the mean distance to the other units of its own cluster and b(i) the lowest mean distance to another cluster. Values near 1 mean well-separated clusters and values near 0 overlapping ones; in scikit-learn a single-member cluster has s = 0. The Calinski–Harabasz index (ratio of between- to within-cluster dispersion; higher is better) and the Davies–Bouldin index (mean similarity of each cluster to its nearest neighbour; lower is better) are computed as secondary diagnostics. No single metric is treated as proof that a given k is correct; cluster profiles, i.e. the means of the original indicators, support interpretation.</p>
+
+<h3>4.5&nbsp; Linking clusters to development outcomes</h3>
+<p>Development outcomes (for example literacy, infant mortality, life expectancy or SDG-index scores) are deliberately excluded from the feature matrix. Once the clusters are fixed, outcomes can be joined by state and year and compared across clusters. Using outcomes to build the clusters and then comparing the same outcomes across them would be circular. Any such comparison is associational, not causal.</p>
+
+<h2><span>5</span>Experimental Setup</h2>
+<p><b>Software.</b> Python with pandas, NumPy, SciPy, scikit-learn [15] and Matplotlib. The script <code>run_experiments.py</code> performs every step and writes all tables and figures to <code>outputs/</code>. <b>Randomness.</b> random_state = 42 and n_init = 50 are fixed. <b>No train/test split.</b> The task is descriptive and unsupervised, not predictive, so there is no held-out evaluation; with n = 31 the results are exploratory. <b>Range of k.</b> Candidates are k = 2–6; with 31 units larger k would produce very small clusters. For a panel, temporal validation should be added.</p>
+
+<h2><span>6</span>Results</h2>
+<p>The figures and the cluster table in this section are those of the original analysis of the 31-unit extract. <code>run_experiments.py</code> regenerates them from the CSV (Appendix B).</p>
+
+<h3>6.1&nbsp; Model selection</h3>
+<p>Fig. 3 shows the mean silhouette score for k = 2–6. The highest score, <b>0.329</b>, is at k = 5; the other values lie between roughly 0.28 (k = 6) and 0.31 (k = 2 and k = 4), read from the figure. All scores are modest, so the data show only moderate cluster structure, not sharply distinct fiscal regimes. One caveat matters: at k = 5 two clusters contain a single unit each (Table 3), and a single-member cluster contributes a silhouette of zero. The gain at k = 5 is therefore probably due to setting the two most extreme units apart; this was not tested separately, but the script reports the number of single-member clusters for every k.</p>
+<div class="fig">
+<img src="../results_original_run/figures/fig_silhouette_vs_k.png" alt="Silhouette vs k">
+<div class="cap"><b>Fig. 3.</b> Mean silhouette score of K-means for k = 2–6 (31 units, standardised indicators).</div>
+</div>
+
+<div class="fig wide">
+<img src="../results_original_run/figures/fig_pca_clusters.png" alt="PCA projection">
+<div class="cap" style="text-align:center"><b>Fig. 4.</b> Projection of the 31 units on the first two principal components, coloured by K-means cluster (k = 5). Some labels overlap.</div>
+</div>
+
+<h3>6.2&nbsp; PCA view</h3>
+<p>PC1 explains 56.5% and PC2 30.3% of the variance, 86.8% together, so Fig. 4 is a faithful two-dimensional summary. NCT Delhi lies far to the upper left and Arunachal Pradesh far to the right, which is why they form single-unit clusters. From the cluster means (Table 3) and Fig. 1, PC1 appears to track the GSDP-scaled indicators – Arunachal Pradesh, with the highest development and capital-outlay ratios, has the largest PC1 – and PC2 the education and health shares, which are highest for NCT Delhi. This reading should be checked against the loadings that the script writes to <code>outputs/pca_loadings.csv</code>.</p>
+
+<h3>6.3&nbsp; Cluster profiles</h3>
+<div class="tbl">
+<div class="cap tcap"><b>Table 3.</b> Mean indicators by K-means cluster, original percentage units (k = 5).</div>
+<table class="t">
+<thead><tr><th>Cluster</th><th class="n">Units</th><th class="n">Educ.</th><th class="n">Health</th><th class="n">Dev/ GSDP</th><th class="n">Social/ GSDP</th><th class="n">Capex/ GSDP</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="n">12</td><td class="n">11.3</td><td class="n">5.3</td><td class="n">10.2</td><td class="n">6.5</td><td class="n">2.0</td></tr>
+<tr><td>2</td><td class="n">12</td><td class="n">13.3</td><td class="n">6.1</td><td class="n">20.6</td><td class="n">13.5</td><td class="n">6.4</td></tr>
+<tr><td>3</td><td class="n">1</td><td class="n">8.8</td><td class="n">3.2</td><td class="n">47.6</td><td class="n">20.4</td><td class="n">17.1</td></tr>
+<tr><td>4</td><td class="n">1</td><td class="n">19.0</td><td class="n">12.9</td><td class="n">5.2</td><td class="n">3.7</td><td class="n">1.2</td></tr>
+<tr><td>5</td><td class="n">5</td><td class="n">17.2</td><td class="n">6.2</td><td class="n">13.6</td><td class="n">9.9</td><td class="n">3.1</td></tr>
+</tbody></table>
+</div>
+<p>Table 3 and Fig. 5 give the mean of the original indicators in each cluster; Appendix A lists the members. Cluster 1 (12 units, e.g. Gujarat, Maharashtra, Karnataka, Tamil Nadu, Kerala, Haryana, Punjab and Telangana) has the lowest GSDP-scaled indicators (development 10.2%, social sector 6.5%, capital outlay 2.0% of GSDP) and mid-range education (11.3%) and health (5.3%) shares. Cluster 2 (12 units, e.g. Manipur, Meghalaya, Mizoram, Nagaland, Tripura, Sikkim, Jammu and Kashmir, Chhattisgarh, Odisha and Jharkhand) has roughly double those ratios (20.6%, 13.5% and 6.4%). Cluster 5 (Bihar, Rajasthan, Himachal Pradesh, Assam and Uttarakhand) combines a high education share (17.2%) with moderate GSDP-scaled ratios (13.6%, 9.9% and 3.1%). Cluster 4 (NCT Delhi) has the highest education and health shares (19.0% and 12.9%) but the lowest GSDP-scaled ratios (5.2%, 3.7% and 1.2%). Cluster 3 (Arunachal Pradesh) is the opposite extreme: development spending equal to 47.6% of GSDP and capital outlay of 17.1%, with the lowest education (8.8%) and health (3.2%) shares.</p>
+<div class="fig">
+<img src="../results_original_run/figures/fig_cluster_mean_indicators.png" alt="Cluster means">
+<div class="cap"><b>Fig. 5.</b> Mean fiscal indicators by K-means cluster.</div>
+</div>
+<p>Descriptive labels such as “investment-heavy” (Cluster 3) or “social-service-heavy” (Cluster 4) summarise group averages; they are not judgements of government performance. The very high GSDP-scaled ratios of some small economies and the low ratios of NCT Delhi may reflect the size of the GSDP denominator and the structure of central transfers as much as policy choice; this was not tested here.</p>
+
+<h3>6.4&nbsp; Hierarchical clustering and secondary diagnostics</h3>
+<p>Ward clustering with the same k, the ARI between the two partitions, the Calinski–Harabasz and Davies–Bouldin values for each k, and the dendrogram are produced by <code>run_experiments.py</code> (<code>hierarchical_vs_kmeans.csv</code>, <code>model_selection.csv</code>, <code>fig_dendrogram_ward.png</code>). <span class="note">Their values were not recorded in the supplied results of the original run, so they are not reported here and should be added after the script is re-run on the verified CSV.</span></p>
+
+<h3>6.5&nbsp; Development outcomes</h3>
+<p>The RBI fiscal statements contain no comparable outcome measures, and none were merged, so no relationship between clusters and development outcomes is claimed. The design of Section 4.5 can be applied by joining independent state-level indicators (for example literacy rate, infant mortality, life expectancy, per-capita NSDP or the NITI Aayog SDG India Index) to the cluster assignments by state and year. Because two clusters are single units and the others have 5 and 12 members, such a comparison should be descriptive (group medians, effect sizes) and should not lean on p-values from tiny groups.</p>
+
+<h2><span>7</span>Discussion</h2>
+<p><b>What the results suggest.</b> Five standardised indicators are enough to separate recurring fiscal profiles: a large group of states with low GSDP-scaled public spending, a group with about twice those ratios, a small group with high education shares, and two outliers. The workflow condenses 31 × 5 numbers into profiles that can be read and checked. The structure is, however, only moderate (silhouette 0.329) and dominated by one dimension: because the three GSDP-scaled indicators are strongly correlated, PC1 mostly measures how large state budgets are relative to GSDP and says less about how they are composed. Keeping only one of the three, or using ratios with a common denominator, is a natural sensitivity test.</p>
+<p><b>Limitations.</b> (i) The data are a one-year BE cross-section, not a panel, and BE may differ from Revised Estimates and Accounts. (ii) Two of the five clusters are single units, so the silhouette at k = 5 depends on outliers. (iii) The indicators have different denominators and three are largely redundant. (iv) Capital outlay/GSDP is not a capital-expenditure share of total expenditure, and development expenditure is not capital expenditure. (v) With n = 31, K-means is sensitive to outliers, scaling and initialisation, and small states and Union Territories have volatile ratios. (vi) No per-capita figures, debt stock, interest burden or outcomes are included. (vii) The feature table has not yet been independently re-checked against the RBI files. (viii) In a panel, repeated state-years are not independent; robustness checks should include clustering multi-year averages and tracking membership over time.</p>
+<p><b>Policy relevance.</b> Clusters can support peer comparison, showing which states have broadly similar fiscal structures and where capital emphasis or education and health weight differ. They must not be used as a league table: geography, demographics, revenue capacity, central transfers, committed expenditure and accounting practice all matter.</p>
+<p><b>Ethics and SDG impact.</b> Aggregate public budget data contain no personal information. The main risk is over-interpretation, since a cluster label can be mistaken for a verdict on a government; transparent definitions, shared code and stated limits address this. The project supports SDG 16, in particular target 16.6 (effective, accountable and transparent institutions), through comparable public-finance analysis, and SDG 17 through the reuse of official statistics and open code. The clustering itself does not measure institutional quality or partnership effectiveness.</p>
+
+<h2><span>8</span>Conclusion and Future Work</h2>
+<p>Using 2025-26 Budget Estimates for 31 states and Union Territories, K-means, Ward clustering and PCA on five standardised fiscal indicators separate recurring budget profiles. The best silhouette score (0.329 at k = 5) indicates moderate separation and is partly due to two single-unit clusters, NCT Delhi and Arunachal Pradesh. The first two principal components explain 86.8% of the variance, and PC1 appears to reflect the GSDP-scaled indicators. The results are exploratory and descriptive, not causal.</p>
+<p class="ind">Future work should (i) extend the data to a multi-year panel, with Accounts as the primary stage and BE/RE as sensitivity checks (Table 2); (ii) add the capital-expenditure share and the interest and committed-expenditure burdens with consistent denominators; (iii) run a CLR analysis on mutually exclusive expenditure categories; (iv) test robustness by dropping correlated indicators and clustering multi-year averages; and (v) join independent development outcomes after clustering, as in Section 4.5.</p>
+
+<h2 style="font-size:10.8pt">Declarations</h2>
+<p><b>Data availability.</b> The source tables are public: RBI, <i>State Finances: A Study of Budgets 2025-26</i> [1], Statements 26, 27 and 35 [3]–[5]. Complete code is listed in Appendix C and published, with the figures and tables of the original run, at <span style="word-break:break-all">https://github.com/sanskriti-cmd/state-budget-clustering</span>. The 31-unit feature table must be re-checked against the RBI files before submission (see the repository README).</p>
+<p><b>Conflict of interest.</b> The author declares no conflict of interest. <b>Funding.</b> None.</p>
+<p><b>Use of AI tools.</b> AI assistants (ChatGPT, OpenAI; Claude, Anthropic) were used to help structure the paper and to draft code and text. The author is responsible for verifying every transcribed value, re-running the code and complying with the university’s AI-use policy.</p>
+
+<h2 style="font-size:10.8pt">References</h2>
+<div class="ref">[1] Reserve Bank of India, <i>State Finances: A Study of Budgets 2025-26</i>, Jan. 23, 2026. [Online]. Available: https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=State+Finances+%3A+A+Study+of+Budgets</div>
+<div class="ref">[2] RBI, “Explanatory Note on Data Sources and Methodology,” in <i>State Finances: A Study of Budgets 2025-26</i>. https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=23696</div>
+<div class="ref">[3] RBI, “Statement 26: Expenditure on Education – As per cent of Aggregate Expenditure,” 2025-26. https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=23735</div>
+<div class="ref">[4] RBI, “Statement 27: Expenditure on Medical and Public Health and Family Welfare – As per cent of Aggregate Expenditure,” 2025-26. https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=23736</div>
+<div class="ref">[5] RBI, “Statement 35: Development Expenditure: Select Indicators,” 2025-26. https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=23744</div>
+<div class="ref">[6] RBI, “Appendix IV: Capital Expenditure of States and Union Territories with Legislature,” 2025-26. https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=23783</div>
+<div class="ref">[7] RBI, “e-STATES Database,” workbook accompanying <i>State Finances 2025-26</i>, link on the publication page of [1].</div>
+<div class="ref">[8] J. MacQueen, “Some methods for classification and analysis of multivariate observations,” in <i>Proc. 5th Berkeley Symp. Math. Statist. Probab.</i>, 1967, pp. 281–297.</div>
+<div class="ref">[9] J. H. Ward Jr., “Hierarchical grouping to optimize an objective function,” <i>J. Amer. Statist. Assoc.</i>, vol. 58, no. 301, pp. 236–244, 1963.</div>
+<div class="ref">[10] P. J. Rousseeuw, “Silhouettes: A graphical aid to the interpretation and validation of cluster analysis,” <i>J. Comput. Appl. Math.</i>, vol. 20, pp. 53–65, 1987.</div>
+<div class="ref">[11] I. T. Jolliffe and J. Cadima, “Principal component analysis: a review and recent developments,” <i>Phil. Trans. R. Soc. A</i>, vol. 374, 2016.</div>
+<div class="ref">[12] T. Caliński and J. Harabasz, “A dendrite method for cluster analysis,” <i>Commun. Statist.</i>, vol. 3, no. 1, pp. 1–27, 1974.</div>
+<div class="ref">[13] D. L. Davies and D. W. Bouldin, “A cluster separation measure,” <i>IEEE Trans. Pattern Anal. Mach. Intell.</i>, vol. PAMI-1, no. 2, pp. 224–227, 1979.</div>
+<div class="ref">[14] J. Aitchison, “The statistical analysis of compositional data,” <i>J. R. Statist. Soc. B</i>, vol. 44, no. 2, pp. 139–177, 1982.</div>
+<div class="ref">[15] F. Pedregosa <i>et al.</i>, “Scikit-learn: Machine learning in Python,” <i>J. Mach. Learn. Res.</i>, vol. 12, pp. 2825–2830, 2011.</div>
+<div class="ref">[16] T. Hastie, R. Tibshirani and J. Friedman, <i>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</i>, 2nd ed. New York, NY, USA: Springer, 2009.</div>
+
+<h2 style="font-size:10.8pt">Appendix A.&nbsp; Cluster membership</h2>
+<div class="tbl">
+<div class="cap tcap"><b>Table A1.</b> Members of each K-means cluster (k = 5), read from the labelled PCA plot (Fig. 4) of the original run. <code>outputs/cluster_members.csv</code> from the script is the authoritative list.</div>
+<table class="t">
+<thead><tr><th>Cl.</th><th class="n">n</th><th>Units</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="n">12</td><td>Andhra Pradesh, Goa, Gujarat, Haryana, Karnataka, Kerala, Maharashtra, Puducherry, Punjab, Tamil Nadu, Telangana, West Bengal</td></tr>
+<tr><td>2</td><td class="n">12</td><td>Chhattisgarh, Jammu and Kashmir, Jharkhand, Madhya Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Odisha, Sikkim, Tripura, Uttar Pradesh</td></tr>
+<tr><td>3</td><td class="n">1</td><td>Arunachal Pradesh</td></tr>
+<tr><td>4</td><td class="n">1</td><td>NCT Delhi</td></tr>
+<tr><td>5</td><td class="n">5</td><td>Assam, Bihar, Himachal Pradesh, Rajasthan, Uttarakhand</td></tr>
+</tbody></table>
+</div>
+
+<h2 style="font-size:10.8pt">Appendix B.&nbsp; Reproducing the results</h2>
+<p class="small">Place the verified 31-unit CSV in <code>data/</code> (columns are matched automatically; see <code>data/DATA_NOTES.md</code>), then run:</p>
+<pre>pip install -r requirements.txt
+python run_experiments.py \
+  --data data/state_budget_features_2025_26_BE.csv
+python make_workflow_diagram.py</pre>
+<p class="small">Outputs in <code>outputs/</code>: model_selection.csv (silhouette, Calinski–Harabasz, Davies–Bouldin), cluster_profiles.csv, cluster_members.csv, state_cluster_assignments.csv, hierarchical_vs_kmeans.csv, pca_loadings.csv, run_info.json and five figures. An optional <code>--outcomes</code> file performs the post-hoc outcome comparison of Section 4.5. The full source of both scripts is reproduced in Appendix C.</p>
+
+
+<div class="wide code">
+<h2 style="font-size:10.8pt">Appendix C.&nbsp; Source code</h2>
+<p class="small" style="text-align:left">Repository: <b>https://github.com/sanskriti-cmd/state-budget-clustering</b>. Listing 1 is the complete analysis script; Listing 2 draws the pipeline diagram (Fig. 2). Both are reproduced exactly as in the repository.</p>
+<div class="cap" style="margin:6px 0 2px"><b>Listing 1.</b> <code>run_experiments.py</code></div>
+<pre class="code">#!/usr/bin/env python3
+&quot;&quot;&quot;
+Clustering Indian states by budget priorities (RBI, &quot;State Finances: A Study of Budgets&quot;).
+
+Reads one CSV (one row per state/UT), standardises five fiscal indicators, compares K-means
+solutions for k = kmin..kmax (silhouette, Calinski-Harabasz, Davies-Bouldin), fits K-means and
+Ward hierarchical clustering with the selected k, runs PCA, and writes every table and figure
+used in the paper to --out. Nothing is typed in by hand.
+
+Examples
+--------
+python run_experiments.py --data data/state_budget_features_2025_26_BE.csv
+python run_experiments.py --data data/panel.csv --year 2023-24 --stage Accounts
+python run_experiments.py --data data/state_budget_features_2025_26_BE.csv --outcomes data/outcomes.csv
+&quot;&quot;&quot;
+import argparse
+import json
+import os
+import platform
+import sys
+
+import matplotlib
+
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import sklearn
+from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.stats import kruskal
+from sklearn.cluster import AgglomerativeClustering, KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import (adjusted_rand_score, calinski_harabasz_score,
+                             davies_bouldin_score, silhouette_samples,
+                             silhouette_score)
+from sklearn.preprocessing import StandardScaler
+
+# canonical name -&gt; display name, plain-language label, and keywords used to find the CSV column
+FEATURES = {
+    &quot;education_share&quot;: (&quot;Education&quot;, &quot;Education expenditure, % of aggregate expenditure (RBI Statement 26)&quot;, [&quot;educ&quot;]),
+    &quot;health_share&quot;: (&quot;Health&quot;, &quot;Medical, public health &amp; family welfare, % of aggregate expenditure (Statement 27)&quot;, [&quot;health&quot;, &quot;medic&quot;]),
+    &quot;development_gsdp&quot;: (&quot;Dev/GSDP&quot;, &quot;Development expenditure, % of GSDP (Statement 35)&quot;, [&quot;develop&quot;]),
+    &quot;social_sector_gsdp&quot;: (&quot;Social/GSDP&quot;, &quot;Social-sector expenditure, % of GSDP (Statement 35)&quot;, [&quot;social&quot;]),
+    &quot;capital_outlay_gsdp&quot;: (&quot;Capex/GSDP&quot;, &quot;Capital outlay, % of GSDP (Statement 35)&quot;, [&quot;capital&quot;, &quot;capex&quot;]),
+}
+AGGREGATE_NAMES = {&quot;all states&quot;, &quot;all states and uts&quot;, &quot;all states and union territories&quot;,
+                   &quot;total&quot;, &quot;india&quot;, &quot;all india&quot;, &quot;all-india&quot;}
+SEED = 42
+
+
+# --------------------------------------------------------------------------- data
+def resolve_columns(df):
+    &quot;&quot;&quot;Find the state column and map the CSV&#x27;s columns onto the canonical feature names.&quot;&quot;&quot;
+    cols = list(df.columns)
+    exact = [c for c in cols if c.lower().strip() in (&quot;state&quot;, &quot;state_ut&quot;, &quot;state/ut&quot;, &quot;state_name&quot;, &quot;unit&quot;)]
+    loose = [c for c in cols if &quot;state&quot; in c.lower()]
+    state_col = (exact or loose or [cols[0]])[0]
+    mapping = {}
+    for canon, (_, _, keys) in FEATURES.items():
+        if canon in cols:
+            mapping[canon] = canon
+            continue
+        hits = [c for c in cols if c != state_col and any(k in c.lower() for k in keys)]
+        if len(hits) != 1:
+            sys.exit(f&quot;Cannot map feature &#x27;{canon}&#x27; to a single CSV column (candidates: {hits}). &quot;
+                     f&quot;Rename the column to &#x27;{canon}&#x27;. Columns found: {cols}&quot;)
+        mapping[canon] = hits[0]
+    if len(set(mapping.values())) != len(mapping):
+        sys.exit(f&quot;Two features map to the same column: {mapping}&quot;)
+    return state_col, mapping
+
+
+def load_data(path, year=None, stage=None):
+    raw = pd.read_csv(path)
+    for col, val in ((&quot;year&quot;, year), (&quot;stage&quot;, stage)):
+        if val is not None:
+            if col not in raw.columns:
+                sys.exit(f&quot;--{col} given but the CSV has no &#x27;{col}&#x27; column&quot;)
+            raw = raw[raw[col].astype(str) == str(val)]
+    state_col, mapping = resolve_columns(raw)
+    print(&quot;Column mapping (CSV -&gt; feature):&quot;)
+    for canon, src in mapping.items():
+        print(f&quot;  {src!r:50} -&gt; {canon}&quot;)
+    df = raw[[state_col] + list(mapping.values())].copy()
+    df.columns = [&quot;state&quot;] + list(mapping.keys())
+    df[&quot;state&quot;] = df[&quot;state&quot;].astype(str).str.strip()
+    n_raw = len(df)
+    df = df[~df[&quot;state&quot;].str.lower().isin(AGGREGATE_NAMES)]
+    for c in FEATURES:
+        df[c] = pd.to_numeric(df[c], errors=&quot;coerce&quot;)
+    n_before = len(df)
+    df = df.dropna(subset=list(FEATURES)).reset_index(drop=True)
+    if df[&quot;state&quot;].duplicated().any():
+        dup = df.loc[df[&quot;state&quot;].duplicated(), &quot;state&quot;].tolist()
+        sys.exit(f&quot;Duplicate state rows {dup}. Use --year/--stage to select one observation per state.&quot;)
+    print(f&quot;Rows read: {n_raw}; aggregates removed: {n_raw - n_before}; &quot;
+          f&quot;dropped for missing features: {n_before - len(df)}; used: {len(df)}&quot;)
+    return df
+
+
+# ----------------------------------------------------------------------- modelling
+def model_selection(X, kmin, kmax, n_init):
+    rows = []
+    for k in range(kmin, min(kmax, len(X) - 1) + 1):
+        km = KMeans(n_clusters=k, random_state=SEED, n_init=n_init).fit(X)
+        sizes = np.bincount(km.labels_)
+        rows.append({
+            &quot;k&quot;: k,
+            &quot;silhouette&quot;: silhouette_score(X, km.labels_),
+            &quot;calinski_harabasz&quot;: calinski_harabasz_score(X, km.labels_),
+            &quot;davies_bouldin&quot;: davies_bouldin_score(X, km.labels_),
+            &quot;inertia&quot;: km.inertia_,
+            &quot;smallest_cluster&quot;: int(sizes.min()),
+            &quot;n_singleton_clusters&quot;: int((sizes == 1).sum()),
+        })
+    return pd.DataFrame(rows)
+
+
+def link_outcomes(assign, path, outdir):
+    &quot;&quot;&quot;Post-hoc only: outcomes are never used to build clusters.&quot;&quot;&quot;
+    oc = pd.read_csv(path)
+    key = lambda s: s.astype(str).str.lower().str.replace(r&quot;[^a-z0-9]&quot;, &quot;&quot;, regex=True)
+    scol = &quot;state&quot; if &quot;state&quot; in oc.columns else oc.columns[0]
+    left = assign[[&quot;state&quot;, &quot;cluster&quot;]].assign(_k=key(assign[&quot;state&quot;]))
+    right = oc.assign(_k=key(oc[scol])).drop(columns=[scol])
+    merged = left.merge(right, on=&quot;_k&quot;, how=&quot;left&quot;).drop(columns=&quot;_k&quot;)
+    num = [c for c in merged.select_dtypes(&quot;number&quot;).columns if c != &quot;cluster&quot;]
+    means = merged.groupby(&quot;cluster&quot;)[num].mean().round(3)
+    means.insert(0, &quot;n_units&quot;, merged.groupby(&quot;cluster&quot;).size())
+    means.to_csv(os.path.join(outdir, &quot;outcomes_by_cluster.csv&quot;))
+    tests = []
+    for c in num:
+        groups = [g.dropna().values for _, g in merged.groupby(&quot;cluster&quot;)[c]]
+        groups = [g for g in groups if len(g)]
+        try:
+            p = kruskal(*groups).pvalue if len(groups) &gt; 1 else np.nan
+        except ValueError:
+            p = np.nan
+        tests.append({&quot;outcome&quot;: c, &quot;n_matched&quot;: int(merged[c].notna().sum()), &quot;kruskal_p&quot;: p})
+    pd.DataFrame(tests).to_csv(os.path.join(outdir, &quot;outcomes_tests.csv&quot;), index=False)
+    print(&quot;Outcome linkage written (descriptive; small clusters, no causal claim).&quot;)
+
+
+# ---------------------------------------------------------------------------- plots
+def make_figures(df, feats, shorts, X, sel, best_k, labels, pcs, pca, outdir):
+    cmap = plt.get_cmap(&quot;tab10&quot;)
+    plt.rcParams.update({&quot;font.size&quot;: 9, &quot;axes.spines.top&quot;: False, &quot;axes.spines.right&quot;: False})
+
+    fig, ax = plt.subplots(figsize=(6.4, 3.8))
+    ax.plot(sel[&quot;k&quot;], sel[&quot;silhouette&quot;], &quot;o-&quot;, color=&quot;#1f4e79&quot;)
+    ax.plot(best_k, sel.loc[sel.k == best_k, &quot;silhouette&quot;].iloc[0], &quot;o&quot;, ms=11, mfc=&quot;none&quot;, mec=&quot;#c0392b&quot;)
+    ax.set_xlabel(&quot;Number of clusters (k)&quot;)
+    ax.set_ylabel(&quot;Mean silhouette score&quot;)
+    ax.set_xticks(sel[&quot;k&quot;])
+    ax.grid(alpha=.25)
+    fig.tight_layout()
+    fig.savefig(os.path.join(outdir, &quot;fig_silhouette_vs_k.png&quot;), dpi=220)
+    plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(8, 5.2))
+    for c in sorted(set(labels)):
+        m = labels == c
+        ax.scatter(pcs[m, 0], pcs[m, 1], s=42, color=cmap((c - 1) % 10), label=f&quot;Cluster {c}&quot;)
+        for i in np.where(m)[0]:
+            ax.annotate(df.state[i], (pcs[i, 0], pcs[i, 1]), fontsize=6.5, xytext=(3, 3), textcoords=&quot;offset points&quot;)
+    ax.set_xlabel(f&quot;PC1 ({pca.explained_variance_ratio_[0] * 100:.1f}% variance)&quot;)
+    ax.set_ylabel(f&quot;PC2 ({pca.explained_variance_ratio_[1] * 100:.1f}% variance)&quot;)
+    ax.legend(frameon=False)
+    ax.grid(alpha=.2)
+    fig.tight_layout()
+    fig.savefig(os.path.join(outdir, &quot;fig_pca_clusters.png&quot;), dpi=220)
+    plt.close(fig)
+
+    prof = df.assign(cluster=labels).groupby(&quot;cluster&quot;)[feats].mean()
+    fig, ax = plt.subplots(figsize=(7, 4.2))
+    w = 0.8 / len(feats)
+    for j, f in enumerate(feats):
+        ax.bar(np.arange(len(prof)) + j * w, prof[f], w, label=shorts[j])
+    ax.set_xticks(np.arange(len(prof)) + 0.4 - w / 2)
+    ax.set_xticklabels(prof.index)
+    ax.set_xlabel(&quot;K-means cluster&quot;)
+    ax.set_ylabel(&quot;Mean (%)&quot;)
+    ax.legend(frameon=False, fontsize=8)
+    fig.tight_layout()
+    fig.savefig(os.path.join(outdir, &quot;fig_cluster_mean_indicators.png&quot;), dpi=220)
+    plt.close(fig)
+
+    corr = df[feats].corr()
+    fig, ax = plt.subplots(figsize=(5.6, 4.6))
+    im = ax.imshow(corr, cmap=&quot;RdBu_r&quot;, vmin=-1, vmax=1)
+    ax.set_xticks(range(len(feats)))
+    ax.set_xticklabels(shorts, rotation=30, ha=&quot;right&quot;)
+    ax.set_yticks(range(len(feats)))
+    ax.set_yticklabels(shorts)
+    for i in range(len(feats)):
+        for j in range(len(feats)):
+            ax.text(j, i, f&quot;{corr.iloc[i, j]:.2f}&quot;, ha=&quot;center&quot;, va=&quot;center&quot;, fontsize=8)
+    fig.colorbar(im, label=&quot;Pearson correlation&quot;)
+    fig.tight_layout()
+    fig.savefig(os.path.join(outdir, &quot;fig_correlation_matrix.png&quot;), dpi=220)
+    plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(8, 4.2))
+    dendrogram(linkage(X, &quot;ward&quot;), labels=df.state.tolist(), leaf_rotation=90, leaf_font_size=7, ax=ax,
+               color_threshold=0, above_threshold_color=&quot;#1f4e79&quot;)
+    ax.set_ylabel(&quot;Ward distance&quot;)
+    fig.tight_layout()
+    fig.savefig(os.path.join(outdir, &quot;fig_dendrogram_ward.png&quot;), dpi=220)
+    plt.close(fig)
+
+
+# ----------------------------------------------------------------------------- main
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument(&quot;--data&quot;, required=True, help=&quot;CSV with one row per state/UT&quot;)
+    ap.add_argument(&quot;--out&quot;, default=&quot;outputs&quot;)
+    ap.add_argument(&quot;--kmin&quot;, type=int, default=2)
+    ap.add_argument(&quot;--kmax&quot;, type=int, default=6)
+    ap.add_argument(&quot;--k&quot;, type=int, default=None, help=&quot;override the silhouette-selected k&quot;)
+    ap.add_argument(&quot;--n-init&quot;, type=int, default=50)
+    ap.add_argument(&quot;--year&quot;, default=None)
+    ap.add_argument(&quot;--stage&quot;, default=None, help=&quot;e.g. Accounts, RE or BE (never mix stages)&quot;)
+    ap.add_argument(&quot;--outcomes&quot;, default=None, help=&quot;optional CSV of development outcomes (post-hoc profiling)&quot;)
+    a = ap.parse_args()
+    os.makedirs(a.out, exist_ok=True)
+
+    df = load_data(a.data, a.year, a.stage)
+    feats = list(FEATURES)
+    shorts = [FEATURES[f][0] for f in feats]
+    X = StandardScaler().fit_transform(df[feats])
+
+    sel = model_selection(X, a.kmin, a.kmax, a.n_init)
+    sel.to_csv(os.path.join(a.out, &quot;model_selection.csv&quot;), index=False)
+    best_k = a.k or int(sel.loc[sel[&quot;silhouette&quot;].idxmax(), &quot;k&quot;])
+    print(&quot;\nModel selection (K-means):\n&quot;, sel.round(3).to_string(index=False))
+    print(f&quot;Selected k = {best_k}&quot;)
+
+    km = KMeans(n_clusters=best_k, random_state=SEED, n_init=a.n_init).fit(X)
+    labels = km.labels_ + 1
+    ward = AgglomerativeClustering(n_clusters=best_k, linkage=&quot;ward&quot;).fit_predict(X) + 1
+    ari = adjusted_rand_score(labels, ward)
+
+    assign = df.assign(kmeans_cluster=labels, ward_cluster=ward,
+                       silhouette_i=silhouette_samples(X, labels))
+    assign.rename(columns={&quot;kmeans_cluster&quot;: &quot;cluster&quot;}).to_csv(os.path.join(a.out, &quot;state_cluster_assignments.csv&quot;), index=False)
+    pd.crosstab(assign.kmeans_cluster, assign.ward_cluster, margins=True).to_csv(os.path.join(a.out, &quot;hierarchical_vs_kmeans.csv&quot;))
+    pd.DataFrame([{&quot;adjusted_rand_index&quot;: ari}]).to_csv(os.path.join(a.out, &quot;hierarchical_agreement.csv&quot;), index=False)
+
+    prof = df.assign(cluster=labels).groupby(&quot;cluster&quot;)[feats].mean().round(2)
+    prof.insert(0, &quot;n_units&quot;, pd.Series(labels).value_counts().sort_index())
+    prof.to_csv(os.path.join(a.out, &quot;cluster_profiles.csv&quot;))
+    (df.assign(cluster=labels).groupby(&quot;cluster&quot;)[&quot;state&quot;].apply(lambda s: &quot;; &quot;.join(sorted(s)))
+       .to_csv(os.path.join(a.out, &quot;cluster_members.csv&quot;)))
+    df[feats].corr().round(3).to_csv(os.path.join(a.out, &quot;correlation_matrix.csv&quot;))
+
+    pca_full = PCA().fit(X)
+    pca = PCA(n_components=2).fit(X)
+    pcs = pca.transform(X)
+    pd.DataFrame({&quot;state&quot;: df.state, &quot;PC1&quot;: pcs[:, 0], &quot;PC2&quot;: pcs[:, 1], &quot;cluster&quot;: labels}).to_csv(
+        os.path.join(a.out, &quot;pca_coordinates.csv&quot;), index=False)
+    pd.DataFrame(pca_full.components_[:2].T, index=feats, columns=[&quot;PC1_loading&quot;, &quot;PC2_loading&quot;]).round(3).to_csv(
+        os.path.join(a.out, &quot;pca_loadings.csv&quot;))
+    pd.DataFrame({&quot;PC&quot;: range(1, len(feats) + 1), &quot;explained_variance_ratio&quot;: pca_full.explained_variance_ratio_}).to_csv(
+        os.path.join(a.out, &quot;pca_explained_variance.csv&quot;), index=False)
+
+    make_figures(df, feats, shorts, X, sel, best_k, labels, pcs, pca, a.out)
+    if a.outcomes:
+        link_outcomes(assign, a.outcomes, a.out)
+
+    info = {&quot;n_units&quot;: int(len(df)), &quot;features&quot;: feats, &quot;selected_k&quot;: best_k,
+            &quot;silhouette_at_k&quot;: float(sel.loc[sel.k == best_k, &quot;silhouette&quot;].iloc[0]),
+            &quot;cluster_sizes&quot;: {int(k): int(v) for k, v in pd.Series(labels).value_counts().sort_index().items()},
+            &quot;adjusted_rand_ward_vs_kmeans&quot;: float(ari),
+            &quot;pc1_pc2_variance&quot;: [float(v) for v in pca.explained_variance_ratio_],
+            &quot;seed&quot;: SEED, &quot;n_init&quot;: a.n_init,
+            &quot;python&quot;: platform.python_version(), &quot;scikit_learn&quot;: sklearn.__version__,
+            &quot;pandas&quot;: pd.__version__, &quot;numpy&quot;: np.__version__}
+    with open(os.path.join(a.out, &quot;run_info.json&quot;), &quot;w&quot;) as fh:
+        json.dump(info, fh, indent=2)
+    print(&quot;\nCluster profiles:\n&quot;, prof.to_string())
+    print(f&quot;\nWard vs K-means adjusted Rand index: {ari:.3f}&quot;)
+    print(f&quot;PC1+PC2 variance: {100 * pca.explained_variance_ratio_.sum():.1f}%&quot;)
+    print(f&quot;All outputs written to {a.out}/&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</pre>
+<div class="cap" style="margin:6px 0 2px"><b>Listing 2.</b> <code>make_workflow_diagram.py</code></div>
+<pre class="code">#!/usr/bin/env python3
+&quot;&quot;&quot;Draws the methodology pipeline figure (Fig. 2 of the paper). Needs no data.&quot;&quot;&quot;
+import os
+
+import matplotlib
+
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+plt.rcParams[&quot;font.family&quot;] = [&quot;Carlito&quot;, &quot;DejaVu Sans&quot;]
+NAVY, FILL, EDGE, DASH = &quot;#1f3864&quot;, &quot;#e8eef7&quot;, &quot;#2f5597&quot;, &quot;#7f7f7f&quot;
+
+steps = [
+    (&quot;1&quot;, &quot;RBI source tables&quot;, &quot;State Finances 2025-26: Statements 26, 27, 35\n(31 states / UTs, Budget Estimates)&quot;, False),
+    (&quot;2&quot;, &quot;Cleaning and harmonisation&quot;, &quot;harmonise names | drop all-states row\nno imputation (drop missing) | one stage only&quot;, False),
+    (&quot;3&quot;, &quot;Scaling&quot;, &quot;z-score each indicator (denominators differ)\n[CLR only for a closed sub-composition]&quot;, False),
+    (&quot;4&quot;, &quot;Model selection&quot;, &quot;K-means, k = 2...6, seed 42, n_init 50\nsilhouette (+ Calinski-Harabasz, Davies-Bouldin)&quot;, False),
+    (&quot;5&quot;, &quot;Final models&quot;, &quot;K-means and Ward hierarchical (same k)\nPCA (2 components) for visualisation&quot;, False),
+    (&quot;6&quot;, &quot;Evaluation and profiles&quot;, &quot;cluster sizes | mean indicators | silhouette\nWard vs K-means agreement (ARI)&quot;, False),
+    (&quot;7&quot;, &quot;Outcome linkage (post-hoc)&quot;, &quot;join literacy / health / SDG-index by state\nafter clustering; descriptive only, no causal claim&quot;, True),
+]
+
+h, gap, w = 1.08, 0.38, 4.8
+fig_h = len(steps) * (h + gap)
+fig, ax = plt.subplots(figsize=(w + 0.2, fig_h * 0.66 + 0.1))
+ax.set_xlim(0, w + 0.2)
+ax.set_ylim(0, fig_h)
+ax.axis(&quot;off&quot;)
+
+for i, (num, title, body, dashed) in enumerate(steps):
+    y = fig_h - (i + 1) * (h + gap) + gap
+    box = FancyBboxPatch((0.15, y), w, h, boxstyle=&quot;round,pad=0.02,rounding_size=0.08&quot;,
+                         fc=&quot;white&quot; if dashed else FILL, ec=DASH if dashed else EDGE,
+                         lw=1.2, ls=&quot;--&quot; if dashed else &quot;-&quot;)
+    ax.add_patch(box)
+    ax.text(0.40, y + h / 2, num, ha=&quot;center&quot;, va=&quot;center&quot;, fontsize=13, color=NAVY, fontweight=&quot;bold&quot;)
+    ax.text(0.78, y + h - 0.25, title, ha=&quot;left&quot;, va=&quot;center&quot;, fontsize=11.5, color=NAVY, fontweight=&quot;bold&quot;)
+    ax.text(0.78, y + 0.37, body, ha=&quot;left&quot;, va=&quot;center&quot;, fontsize=9.4, color=&quot;#222222&quot;, linespacing=1.25)
+    if i &lt; len(steps) - 1:
+        ax.add_patch(FancyArrowPatch((0.15 + w / 2, y), (0.15 + w / 2, y - gap + 0.02),
+                                     arrowstyle=&quot;-|&gt;&quot;, mutation_scale=11,
+                                     color=DASH if i == len(steps) - 2 else EDGE, lw=1.2,
+                                     ls=&quot;--&quot; if i == len(steps) - 2 else &quot;-&quot;))
+
+os.makedirs(&quot;figures&quot;, exist_ok=True)
+fig.savefig(&quot;figures/fig_workflow.png&quot;, dpi=250, bbox_inches=&quot;tight&quot;, facecolor=&quot;white&quot;)
+print(&quot;wrote figures/fig_workflow.png&quot;)</pre>
+</div>
+
+</main>
+</body>
+</html>
